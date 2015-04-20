@@ -10,6 +10,13 @@
     position: relative;
 }
 
+.site-banner {
+    background-image: url('../assets/nyc-time-wide.png');
+    height: 110px;
+    width: 100%;
+    cursor: pointer;
+}
+
 .site-title {
     font-size: 26px;
     line-height: 56px;
