@@ -35,4 +35,5 @@ Here are some projects I've been working on recently:
 ##[Caffeine Slot Machine](http://caffeine-slot-machine.herokuapp.com)##
 ![Caffeine Slot Machine screenshot](../assets/projects/caffeine-slot-machine.png)
 
-- This project simply came from a day of practice in using custom CSS transitions, which is what all of the animations used. Please pay no mind to rest.
+- Uses 3D CSS transitions and deployed on Heroku
+- This project site simply came from a day of practice in using custom CSS transitions, which is what all of the animations used. 
