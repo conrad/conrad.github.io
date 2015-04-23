@@ -1,0 +1,105 @@
+---
+layout: post
+title:  "The Perfect Gulpfile Default Command"
+date:   2015-02-16 16:09:15
+categories: jekyll update
+---
+Every project requires a slightly different build process, but there are a set of principles and bread-and-butter tasks that each Gulpfile should have. 
+
+One great practice is to have just the most common and fundamental tasks be the default option, which is what runs when you simply write `gulp` into your terminal. Save yourself some keystrokes. Consequently, this default command will be for useful in development (have a separate `gulp deploy` command for deployment).  
+
+For the front end of a web application, what is usually an optimal default process involves (1) cleaning out your distribution folder, (2) linting your code, (3) compiling whatever needs to be compiled, (4) concatenating your files, (5) minifying that code, (6) copying the files together to a distribution folder, (7) running a local server to view and test it, and (8) watching for any changes to the target files. You can characterize these actions as three steps: build, run, and watch. Given this breakdown, the build process encompasses the first 6 actions listed.
+
+For these operations, you'll need the following gulp dependencies:
+
+* `gulp` (of course, but just don't leave it out!)
+* `gulp-clean`  (or `rimraf` now, which also give messages on deprecation)
+* `gulp jshint`
+* `gulp-concat`
+* `gulp-ulglifyjs`
+* `gulp-minify-css`
+* any compiling dependencies, like `browserify` or `reactify`
+* `gulp-bower`
+
+Here is the rest of the code for the Gulp tasks that some colleagues and I wrote out for a project recently.
+
+```
+gulp.task('clean', function () {
+  return gulp.src(['dist/js', 'dist/index.html'], {read: false})
+    .pipe(clean());
+});
+
+// This task also requires the gulp-sass library (not included above).
+gulp.task('sass', function(done) {
+  return gulp.src(paths.sass)
+    .pipe(sass())
+    .pipe(gulp.dest('./dist/css/'))
+    .pipe(sass({sourcemap: true}))
+    .pipe(minifyCss({
+      keepSpecialComments: 0
+    }))
+    .pipe(rename({ extname: '.min.css' }))
+    .pipe(gulp.dest('./dist/css/'));
+});
+
+gulp.task('copy', function () {
+  return gulp.src(paths.html)
+    .pipe(gulp.dest('dist/'));
+});
+
+// We used React, 
+    // for which browserify is useful for parsing its `require` statements
+    // and reactify is is useful for compiling its JSX
+gulp.task('compile', function(){
+  var b = browserify();
+  b.transform(reactify);   // use the reactify transform
+  b.add('./public/js/main.js');
+  return b.bundle()
+    .pipe(source('main.js'))
+    .pipe(gulp.dest('./dist/js'));
+});
+
+gulp.task('compress', function() {
+  gulp.src('./dist/js/*.js')
+    .pipe(uglify('main.min.js'))
+    .pipe(gulp.dest('dist/js'))
+});
+
+
+gulp.task('build', ['clean', 'compile', 'compress', 'copy', 'sass']);
+
+gulp.task('watch', function() {
+  gulp.watch('public/**/*.*', ['build']);
+});
+
+gulp.task('run', shell.task([
+  'cd server && nodemon server.js'
+]));
+
+gulp.task('default', ['build', 'watch', 'run']);
+```
+
+There you go. Code for a nice Gulpfile with a robust default process that keeps a server running and up-to-date with your code! Profit.
+
+Also, remember: ALWAYS name your gulpfile, `gulpfile.js`. Otherwise, Gulp gets lost looking for it.
+
+And be careful not to minify/uglify your external libraries. You're likely to jumble up variables that you need set as references. Instead, simply use the minified versions that they provide, which then can be concatenated with the rest of the appropriate code.
+
+###UPDATE:
+The methods inside a task occur asynchronously. Because my MacBook still has a hard disk (no solid state drive, sadly), the `compile` method can often take too long before `copy` tries to run, and then you get an error. This issue arises on my computer specifically because the I/O process requires so much more work on an old school HD than it does on SSD. To avoid this problem, I dug up the `run-sequence` library (some others, like `gulp-sequence` and `gulp-run-sequence` didn't work so well). Using this library's methods allows you to run tasks synchronously. Here is the code to do it:
+
+```
+var runSequence = require('run-sequence');
+
+//...
+
+gulp.task( 'build', function(callback) {
+  runSequence('clean', 'compile', 'copy', 'sass', callback); 
+});
+
+gulp.task( 'default', function(callback) {
+  runSequence('build', 'watch', 'run', callback);
+});
+```
+
+Go forth and prosper.

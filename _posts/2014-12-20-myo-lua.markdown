@@ -1,0 +1,130 @@
+---
+layout: post
+title:  "A Lua Script for Mouse Control with a Myo Armband (in ~4 easy steps)"
+date:   2014-12-20 16:09:15
+categories: jekyll update
+---
+Recently, I received a developer's kit for the Myo Armband from Thalmic Labs. Fortunately, for me, the Myo's SDK has a JavaScript binding, and I've been working in JS for most of my waking hours recently. Unfortunately, I've had time only to play with the scripting language that works with it on simple applications, instead of being able to dig deeply into the JS library. Enter Lua.
+
+Lua is a pretty simple and intuitive scripting language. You'll see some of its syntactic quirks below, but I've been able to build out a few scripts for controlling web apps, like 2048 and Flappy Bird. The one included in this post is the most useful one of my scripts so far. It's simple and universal. It allows the wearer to perform most mouse functions anywhere in the computer mapped to the following arm motions:
+
+* Mouse movement: change arm orientation
+* Left click: wave hand to the left
+* Right click: wave hand to the right
+* Drag/Grab: make a fist
+* Activate/Deactivate Myo mouse control: tap thumb and middle finger together twice.
+
+And now, ~4 easy steps to have universal mouse control with your Myo Armband:
+
+1. Download & install Myo Connect from the Thalmic Labs site:
+  https://www.thalmic.com/start/
+
+2. Paste the script below into a file saved with the extension '.lua'
+  Using the lua file on your computer should require zero setup (at least this was the case from my Mac on Yosemite). I'm not certain, but the script is probably all read within Myo Connect.
+
+3. Add the lua file to your Myo Connect Application Manager.
+  
+  First, open the Myo Connect Application Manager. Myo Connect should appear in the menu bar of your desktop when it's running.
+  
+  Click on it and open the Application Manager.
+
+  Now, click the Add button in the Application Manager and select the lua file you just saved.
+
+4. Plug the bluetooth transmitter into the USB, pull on the armband, and perform the Myo's Sync Gesture (waving your hand outward and rotating your arm outward 90 degrees). 
+  
+  If the application is switched on in Myo Connect, your Myo Armband will be active and moving around the mouse.
+
+####The Script
+
+Again, save a file of text with a .lua extension and paste in this script:
+
+
+    scriptId = 'co.mattconrad.mouseControl'  -- or any url in this format 
+    scriptTitle = 'Mouse Control'
+    scriptDetailsUrl = ''
+    -- The lines above are necessary for any Myo application but will not otherwise affect the functionality of your script, unless you are attempting to post it online to the Myo Market.`
+
+    -- The following lines set the initial state so that the Myo Armband is active and stays active unless intentionally locked with the toggling gesture
+    myo.setLockingPolicy('none')
+    mouseEnabled = true
+    myo.controlMouse(mouseEnabled)
+
+    -- This function is required for the armband to become active. Here, it is set so that it stay active no matter which window is active.
+    function onForegroundWindowChange(app, title)
+      return true
+    end
+
+    -- This function uses a built-in method to determine which arm the Myo is on. If it's on the left arm, the direction for each of the wave methods needs to be reversed.
+    function conditionallySwapWave(pose)
+      if myo.getArm == "left" then
+        -- waveOut for waveIn
+        if pose == "waveIn" then
+          pose = "waveOut"
+        -- and waveIn for waveOut 
+        elseif pose == "waveOut" then
+          pose = "waveIn"
+        end
+      end
+      -- make sure to return the new value
+      return pose
+    end
+
+    -- Map gestures to actions
+    -- These use several of Myo's preset gestures or poses
+    -- The edge variable is like a boolean that is 'on' whenever a pose evaluates to be true. You probably want edge to be 'on' in order to initiate any actions, unless you're setting a timer based on inactivity
+    function onPoseEdge(pose, edge)
+      if (edge == 'on') then`
+        -- Change the wave direction if necessary
+        pose = conditionallySwapWave(pose)
+
+        if (pose == 'fist') then
+          grab()
+          -- myo.debug('grabbed')
+
+        elseif (pose == 'waveIn') then
+          leftClick()
+
+        elseif (pose == 'waveOut') then
+          rightClick()
+
+        elseif (pose == 'doubleTap') then
+            toggleMouseControl()
+        end
+
+      elseif (edge == 'off') then
+        ungrab()
+      end
+    end
+
+    function toggleMouseControl()
+      mouseEnabled = not mouseEnabled
+      myo.vibrate('medium')
+      -- myo.debug("it's on")
+      myo.controlMouse(mouseEnabled);
+    end
+
+    -- Here is where we map each of the gestures to the appropriate action
+    function leftClick()
+      myo.mouse('left', 'click')
+    end
+
+    function rightClick()
+      myo.mouse('right', 'click')
+    end
+
+    function grab()
+      myo.mouse('left', 'down')
+    end
+
+    function ungrab()
+      myo.mouse('left', 'up')
+    end
+
+
+###### Further notes on this script and Lua:
+
+If you should ever want to monitor the output or debug any scripts in Lua, you may insert the command myo.debug() into whatever code your curious about.  And you can pass any string or variable to it in order to see its value whenever the code is executed. THEN, you need to open the Myo Connect Preferences (found in the drop-down from the desktop menu bar) and tick the box to Enable Developer Mode.
+
+Currently, there are a few of these myo.debug() statements already in the script but commented out, using Lua's comment syntax "--" at the beginning of the line.
+
+From here, I'm hoping to write a few applications to use the Myo with an Oculus Rift (or really... a Cardboard), but these scripts have been a gratifying place to begin. If you're trying out a Myo or thinking about building something similar for another device, I hope you find this to be a useful starter as well.

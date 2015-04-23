@@ -1,6 +1,18 @@
 /**
  * Site header
  */
+
+.site-banner-background {
+    background-image: url('../assets/stars.png');
+}
+
+.site-banner {
+    background-image: url('../assets/sf-nash-silhouette.png');
+    height: 110px;
+    width: 100%;
+    cursor: pointer;
+}
+
 .site-header {
     border-top: 5px solid $grey-color-dark;
     border-bottom: 1px solid $grey-color-light;
@@ -10,12 +22,6 @@
     position: relative;
 }
 
-.site-banner {
-    background-image: url('../assets/nyc-time-wide.png');
-    height: 110px;
-    width: 100%;
-    cursor: pointer;
-}
 
 .site-title {
     font-size: 26px;
