@@ -3,13 +3,15 @@
  */
 
 .site-banner-background {
-    background-image: url('../assets/dots-banner.gif');
+    background-image: url('../assets/myoats-banner.png');
     background-size: cover;
+
 }
 
 .site-banner {
-    background-image: url('../assets/sf-nash-silhouette.png');
-    height: 110px;
+    // background-image: url('../assets/sf-nash-silhouette.png');
+    // background-repeat: no-repeat;
+    height: 220px;
     width: 100%;
     cursor: pointer;
 }
@@ -17,7 +19,7 @@
 .site-header {
     border-top: 5px solid $grey-color-dark;
     border-bottom: 1px solid $grey-color-light;
-    min-height: 56px;
+    min-height: 120px;
 
     // Positioning context for the mobile navigation icon
     position: relative;
