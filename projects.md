@@ -26,7 +26,7 @@ Here are some projects I've been working on recently:
 - Uses React/Flux, Node.js/Express, Google Drive API, Dropbox API, and AWS 
 - Web application that provides multi-API authentication to view, search, and manage cloud file storage accounts from one application.
 
-##[Asteroids with D3](http://d3asteroids.azurewebsites.net)##
+<!-- ##[Asteroids with D3](http://d3asteroids.azurewebsites.net)##
 ![D3 Asteroids screenshot](../assets/projects/d3Asteroids.png)
 
 - Uses D3 and deployed on Azure
@@ -37,3 +37,4 @@ Here are some projects I've been working on recently:
 
 - Uses 3D CSS transitions and deployed on Heroku
 - This project site simply came from a day of practice in using custom CSS transitions, which is what all of the animations used. 
+ -->
