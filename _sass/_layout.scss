@@ -2,16 +2,14 @@
  * Site header
  */
 
-.site-banner-background {
+.site-banner {
     background-image: url('../assets/myoats-banner-right.png');
     background-size: cover;
-
-}
-
-.site-banner {
     height: 220px;
     width: 100%;
     cursor: pointer;
+    // vertical-align: middle;
+    // color: white;
 }
 
 .site-header {
@@ -30,10 +28,12 @@
     letter-spacing: -1px;
     margin-bottom: 0;
     float: left;
+    color: white;
 
     &,
     &:visited {
-        color: $grey-color-dark;
+        // color: $grey-color-dark;
+        color: $header-text-color;
     }
 }
 
@@ -46,7 +46,8 @@
     }
 
     .page-link {
-        color: $text-color;
+        // color: $text-color;
+        color: white;
         line-height: $base-line-height;
 
         // Gaps between nav items, but not on the first one
